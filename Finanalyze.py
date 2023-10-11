@@ -1,55 +1,44 @@
 import streamlit as st
 import pandas as pd
 from PyPDF2 import PdfReader
+import openpyxl
+from collections import defaultdict
 
-# Define categories for the Indian context
-categories = {
-    # ... (as provided in the earlier messages) ...
-}
-
-def categorize_transaction(description):
-    for cat, keywords in categories.items():
+def analyze_data(df):
+    # Mock data categorization logic
+    categories = {
+        'Food': ['grocery', 'restaurant', 'fast food'],
+        'Entertainment': ['movie', 'netflix', 'music'],
+        'Utilities': ['electric', 'water', 'gas'],
+        # ... add more categories
+    }
+    categorized_data = defaultdict(float)
+    for category, keywords in categories.items():
         for keyword in keywords:
-            if keyword.lower() in description.lower():
-                return cat
-    return 'Miscellaneous'
+            categorized_data[category] += df[df['Description'].str.contains(keyword, case=False, na=False)]['Amount'].sum()
+    st.write(categorized_data)
 
-def extract_text_from_pdf(pdf_file):
-    # Initialize a PDF reader object
-    pdf_reader = PdfReader(pdf_file)
-    text = ""
-    for page in pdf_reader.pages:
-        # Extract text from each page
-        text += page.extract_text()
-    return text
-
-def analyze_data(data):
-    # Categorize transactions
-    data['Category'] = data['Description'].apply(categorize_transaction)
-    
-    # ... (rest of the analysis as provided previously) ...
+    # Additional financial advice logic can be added here
 
 def main():
-    st.title("Financial Data Analyzer")
+    st.title("Financial Analysis App")
 
-    # Allow multiple file uploads
-    uploaded_files = st.file_uploader("Upload your financial data (Excel/PDF)", type=["xlsx", "pdf"], accept_multiple_files=True)
-    
-    data_frames = []
+    uploaded_files = st.file_uploader("Upload your bank and/or credit card statements", type=['pdf', 'xlsx'], accept_multiple_files=True)
 
     if uploaded_files:
         for uploaded_file in uploaded_files:
-            if ".xlsx" in uploaded_file.name:
-                df = pd.read_excel(uploaded_file)
-                data_frames.append(df)
-            elif ".pdf" in uploaded_file.name:
-                text_data = extract_text_from_pdf(uploaded_file)
-                # Use the file name as a unique key for each text_area
-                st.text_area(f"Extracted PDF Data: {uploaded_file.name}", text_data, key=uploaded_file.name)
-        
-        if data_frames:
-            consolidated_data = pd.concat(data_frames, ignore_index=True)
-            analyze_data(consolidated_data)
+            if uploaded_file.name.endswith('.pdf'):
+                # Extract data from PDF (mock logic; in reality, you'd have a more complex data extraction process)
+                pdf = PdfReader(uploaded_file)
+                text_data = ""
+                for page in pdf.pages:
+                    text_data += page.extract_text()
+                st.text_area("Extracted PDF Data:", text_data)
+                # Convert extracted text data to DataFrame (pseudo-logic; actual conversion would depend on PDF content and structure)
+                # df = convert_to_dataframe(text_data)
+            else:
+                df = pd.read_excel(uploaded_file, engine='openpyxl')
+                analyze_data(df)
 
 if __name__ == "__main__":
     main()
