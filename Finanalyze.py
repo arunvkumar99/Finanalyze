@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from PyPDF2 import PdfFileReader
+from PyPDF2 import PdfReader
 import openpyxl
 
 # File Processing
@@ -9,10 +9,10 @@ def process_files(uploaded_files):
 
     for file in uploaded_files:
         if 'pdf' in file.type:
-            pdf = PdfFileReader(file)
+            pdf = PdfReader(file)
             text = ""
-            for page_num in range(pdf.numPages):
-                text += pdf.getPage(page_num).extractText()
+            for page_num in range(len(pdf.pages)):
+                text += pdf.pages[page_num].extractText()
             st.text_area("Extracted PDF Data:", text)
             # Convert text to DataFrame if needed
             # Example: consolidated_data = pdf_to_df(text)
