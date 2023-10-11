@@ -86,6 +86,16 @@ def main():
     if uploaded_files:
         consolidated_data = process_files(uploaded_files)
         
+        required_columns = ['category', 'date', 'amount']
+        if all(col in consolidated_data.columns for col in required_columns):
+            
+            # Call various analysis functions here.
+            avg_monthly_income, income_trend = income_analysis(consolidated_data)
+            # ... [rest of the code]
+
+        else:
+            st.error("The uploaded file does not contain the required columns: 'category', 'date', and 'amount'. Please upload a correctly formatted file.")
+        
         st.subheader("Income Analysis")
         avg_monthly_income, income_trend = income_analysis(consolidated_data)
         st.write(f"Average Monthly Income: ${avg_monthly_income:.2f}")
