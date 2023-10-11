@@ -11,8 +11,8 @@ def process_files(uploaded_files):
         if 'pdf' in file.type:
             pdf = PdfReader(file)
             text = ""
-            for page_num in range(len(pdf.pages)):
-                text += pdf.pages[page_num].extractText()
+            for page in pdf.pages:
+                text += page.extract_text()  # Updated function call here
             st.text_area("Extracted PDF Data:", text)
             # Convert text to DataFrame if needed
             # Example: consolidated_data = pdf_to_df(text)
